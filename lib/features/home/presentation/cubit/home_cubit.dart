@@ -1,11 +1,10 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gallery_app/core/helpers/image_picker/image_picker.dart';
 import 'package:gallery_app/features/home/domain/entities/images_entity.dart';
 import 'package:gallery_app/features/home/domain/usecases/get_images_usecase.dart';
 import 'package:gallery_app/features/home/domain/usecases/upload_image_usecase.dart';
-import 'package:image_picker/image_picker.dart';
 
 part 'home_state.dart';
 
@@ -28,22 +27,39 @@ class HomeCubit extends Cubit<HomeState> {
     });
   }
 
-  bool isImagesListNotEmpty() {
-    return imagesEntity!.dataEntity!.images.isNotEmpty;
+  Future<void> uploadCameraImage() async {
+    emit(UploadImageLoading());
+    final File? imagePicked = await ImagePickerHelper.cameraPick();
+    if (imagePicked != null) {
+      final result = await _uploadImageUseCase(File(imagePicked.path));
+      result.fold(() {
+        getImages();
+        emit(UploadImageSuccess());
+      }, (failure) {
+        emit(UploadImageFailure(failure.message));
+      });
+    } else {
+      return;
+    }
   }
 
-  Future<void> uploadImage() async {
+
+   Future<void> uploadGalleryImage() async {
     emit(UploadImageLoading());
-    final XFile? image =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    final result = await _uploadImageUseCase(File(image!.path));
-    result.fold(() {
-      emit(UploadImageSuccess());
-    }, (failure) {
-      log(failure.message);
-      emit(UploadImageFailure(failure.message));
-    });
+    final File? imagePicked = await ImagePickerHelper.galleryPick();
+    if (imagePicked != null) {
+      final result = await _uploadImageUseCase(File(imagePicked.path));
+      result.fold(() {
+        getImages();
+        emit(UploadImageSuccess());
+      }, (failure) {
+        emit(UploadImageFailure(failure.message));
+      });
+    } else {
+      return;
+    }
   }
+
 
   @override
   void onChange(Change<HomeState> change) {

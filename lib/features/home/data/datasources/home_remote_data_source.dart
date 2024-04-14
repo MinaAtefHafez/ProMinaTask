@@ -28,7 +28,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   Future<void> uploadImage(File file) async {
     try {
       var formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(file.path),
+        'img': await MultipartFile.fromFile(file.path),
       });
 
       await _apiConsumer.post(

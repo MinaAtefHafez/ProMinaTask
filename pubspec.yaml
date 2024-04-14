@@ -39,6 +39,7 @@ dependencies:
   flutter_svg: ^2.0.10+1
   get_it: ^7.6.8
   image_picker: ^1.0.7
+  permission_handler: ^11.3.1
   shared_preferences: ^2.2.2
 
 dev_dependencies:

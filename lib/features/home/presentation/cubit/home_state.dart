@@ -23,3 +23,4 @@ class UploadImageFailure extends HomeState {
 
   UploadImageFailure(this.errMessage);
 }
+
